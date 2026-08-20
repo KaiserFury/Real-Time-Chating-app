@@ -12,7 +12,7 @@ export const register = async (req, res) => {
             return res.status(400).json({
                 message: "Name, Username, and Password are required",
             });
-        };
+        }
         const normalizedName = name.trim();
         const normalizedUsername = username.trim().toLowerCase();
         if (!normalizedName || !normalizedUsername || !password.trim()) {
