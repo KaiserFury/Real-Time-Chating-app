@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const usernamePattern = /^[a-z0-9._]+$/;
+export const usernamePattern = /^[a-z0-9._]+$/;
 
 const userSchema = new mongoose.Schema(
   {
