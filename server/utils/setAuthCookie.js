@@ -10,3 +10,12 @@ export const setAuthCookie = (res, token) => {
 
     })
 }
+
+export const clearAuthCookie = (res) => {
+    return res.clearCookie("token",{
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+
+    })
+}

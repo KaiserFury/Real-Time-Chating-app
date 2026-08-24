@@ -1,5 +1,6 @@
 import express from "express";
-import { checkUsername, register, userLogin } from "../controllers/authController.js"
+import { checkUsername, getCurrentUser, logout, register, userLogin } from "../controllers/authController.js"
+import { authenticate } from "../middleware/authenticate.js";
 
 
 const router = express.Router()
@@ -18,6 +19,13 @@ router
 router
   .route("/login")
   .post(userLogin);
+
+router
+  .route("/me")
+  .get(authenticate, getCurrentUser);
+router
+  .route("/logout")
+  .post(logout);
 
 
 export {router as registerRoute};

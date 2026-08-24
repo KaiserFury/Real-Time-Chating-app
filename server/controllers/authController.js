@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import User, { usernamePattern } from "../models/User.js";
 import { generateToken } from "../utils/generateToken.js";
-import { setAuthCookie } from "../utils/setAuthCookie.js";
+import { clearAuthCookie, setAuthCookie } from "../utils/setAuthCookie.js";
 
 const BCRYPT_ROUNDS = 12;
 
@@ -196,7 +196,6 @@ export const userLogin = async (req, res) => {
     const token = generateToken(userDetail._id);
     
     setAuthCookie(res, token);
-
     return res.status(200).json({
       message: "Login successful",
       user: {
@@ -214,4 +213,23 @@ export const userLogin = async (req, res) => {
       message: "Unable to log in",
     });
   }
+};
+
+export const getCurrentUser = (req, res) => {
+    const user = req.user;
+    return res.status(200).json({
+      id: user._id,
+      name: user.name,
+      username: user.username,
+      profilePicture: user.profilePicture,
+      lastSeen: user.lastSeen,
+      createdAt: user.createdAt,
+    });
+}
+
+export const logout = (req, res) => {
+  clearAuthCookie(res);
+  return res.status(200).json({
+    message: "Logged out successfully",
+  });
 };
