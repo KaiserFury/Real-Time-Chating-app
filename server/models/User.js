@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Keep this exported so controllers and the schema enforce one username format.
 export const usernamePattern = /^[a-z0-9._]+$/;
 
 const userSchema = new mongoose.Schema(
@@ -40,6 +41,7 @@ const userSchema = new mongoose.Schema(
 
     lastSeen: {
       type: Date,
+      // This becomes useful when realtime presence updates the user's final disconnect time.
       default: null,
     },
   },

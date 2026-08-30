@@ -19,6 +19,8 @@ export const register = async (req, res) => {
     }
     const normalizedName = name.trim();
     const normalizedUsername = username.trim().toLowerCase();
+
+    // Password is hashed exactly as typed, but whitespace-only passwords are rejected.
     if (!normalizedName || !normalizedUsername || !password.trim()) {
       return res.status(400).json({
         message: "Name, username, and password cannot be empty",
@@ -50,6 +52,7 @@ export const register = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
+    // Only the hash is stored; the plain password is never saved.
     const user = await User.create({
       name: normalizedName,
       username: normalizedUsername,
@@ -117,6 +120,7 @@ export const checkUsername = async (req, res) => {
       });
     }
 
+    // The model and registration controller share the same username rule.
     if (!usernamePattern.test(normalizedUsername)) {
       return res.status(400).json({
         message:
@@ -177,6 +181,7 @@ export const userLogin = async (req, res) => {
       username: normalizedUsername,
     }).select("+passwordHash");
 
+    // Use one generic message so attackers cannot learn which field was wrong.
     if (!userDetail) {
       return res.status(401).json({
         message: "Invalid username or password",
@@ -217,6 +222,7 @@ export const userLogin = async (req, res) => {
 
 export const getCurrentUser = (req, res) => {
     const user = req.user;
+    // req.user comes from authenticate middleware, not from client input.
     return res.status(200).json({
       id: user._id,
       name: user.name,

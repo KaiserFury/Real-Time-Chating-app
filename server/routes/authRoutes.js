@@ -20,6 +20,7 @@ router
   .route("/login")
   .post(userLogin);
 
+// Protected route: authenticate must attach req.user before the controller runs.
 router
   .route("/me")
   .get(authenticate, getCurrentUser);

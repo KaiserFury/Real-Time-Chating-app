@@ -1,8 +1,7 @@
 
-// HttpOnly prevents browser JavaScript from reading the session token.
-
 export const setAuthCookie = (res, token) => {
     res.cookie("token", token, {
+        // HttpOnly prevents browser JavaScript from reading the session token.
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
@@ -13,6 +12,7 @@ export const setAuthCookie = (res, token) => {
 
 export const clearAuthCookie = (res) => {
     return res.clearCookie("token",{
+        // Match the set options so the browser clears the same cookie.
         httpOnly: true,
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
