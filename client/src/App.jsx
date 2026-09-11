@@ -1,10 +1,11 @@
-import { useContext } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
-import apiClient from './api/apiClient.js';
-import { AuthContext } from './context/AuthContext.js';
-import './App.css';
-import { RegisterForm } from './pages/Register.jsx';
-import { LoginForm } from './pages/Login.jsx';
+import { useContext } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import apiClient from "./api/apiClient.js";
+import { AuthContext } from "./context/AuthContext.js";
+import "./App.css";
+import { RegisterForm } from "./pages/Register.jsx";
+import { LoginForm } from "./pages/Login.jsx";
+import Button from "./components/Button.jsx";
 
 function App() {
   const { user, loading, setUser } = useContext(AuthContext);
@@ -25,23 +26,63 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      await apiClient('/api/auth/logout', { method: 'POST' });
+      await apiClient("/api/auth/logout", { method: "POST" });
       setUser(null);
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
       setUser(null);
     }
   };
 
   return (
-    <main style={{ padding: '2rem', maxWidth: '480px', margin: '0 auto' }}>
-      <h1>Welcome back</h1>
-      <p>Name: {user.name}</p>
-      <p>Username: {user.username}</p>
-      <button type="button" onClick={handleLogout} style={{ marginTop: '1rem' }}>
-        Log out
-      </button>
-    </main>
+    <>
+      <div className="relative w-full max-w-xs rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
+        <div className="flex flex-col items-center">
+          <img
+            className="mb-5 h-24 w-24 rounded-full object-cover ring-2 ring-white/15"
+            src={user.profilePicture}
+            alt="Profile Picture"
+          />
+          <h5 className="mb-1 text-xl font-semibold tracking-tight text-white">
+            {user.name}
+          </h5>
+          <span className="text-sm text-slate-400">@{user.username}</span>
+
+          <div className="mt-6 flex gap-3">
+            <button
+              onClick={handleLogout}
+              type="button"
+              className="inline-flex items-center rounded-lg bg-white px-4 py-2.5 text-sm font-medium leading-5 text-slate-900 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-4 focus:ring-white/20"
+            >
+              <svg
+                className="me-1.5 -ms-0.5 h-4 w-4"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </svg>
+              Logout
+            </button>
+            <button
+              type="button"
+              className="inline-flex items-center rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium leading-5 text-slate-200 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus:ring-4 focus:ring-white/10"
+            >
+              Message
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 

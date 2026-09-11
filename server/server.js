@@ -1,11 +1,12 @@
+import "dotenv/config";   // ← loads .env immediately, as a side effect of the import itself
+
 import express from "express";
-import dotenv from "dotenv";
 import connectDatabase from "./config/database.js";
 import { registerRoute } from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-dotenv.config();
+
 
 const app = express();
 const PORT = process.env.PORT || 8000;

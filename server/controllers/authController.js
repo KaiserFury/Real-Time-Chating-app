@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import User, { usernamePattern } from "../models/User.js";
 import { generateToken } from "../utils/generateToken.js";
 import { clearAuthCookie, setAuthCookie } from "../utils/setAuthCookie.js";
+import { uploadBufferToCloudinary } from "../utils/uploadToCloudinary.js";
 
 const BCRYPT_ROUNDS = 12;
 
@@ -52,17 +53,23 @@ export const register = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
+    let profilePictureUrl = "";
+    if (req.file) {
+      const result = await uploadBufferToCloudinary(req.file.buffer);
+      profilePictureUrl = result.secure_url;
+    }
+
     // Only the hash is stored; the plain password is never saved.
     const user = await User.create({
       name: normalizedName,
       username: normalizedUsername,
       passwordHash,
+      profilePicture: profilePictureUrl,
     });
     const token = generateToken(user._id);
-    
+
     setAuthCookie(res, token);
-
-
+    
     return res.status(201).json({
       message: "Account created successfully",
       user: {
@@ -127,7 +134,7 @@ export const checkUsername = async (req, res) => {
           "Username can only contain lowercase letters, numbers, periods, and underscores",
       });
     }
-    
+
     const usernameExists = await User.exists({
       username: normalizedUsername,
     });
@@ -199,7 +206,7 @@ export const userLogin = async (req, res) => {
       });
     }
     const token = generateToken(userDetail._id);
-    
+
     setAuthCookie(res, token);
     return res.status(200).json({
       message: "Login successful",
@@ -221,17 +228,17 @@ export const userLogin = async (req, res) => {
 };
 
 export const getCurrentUser = (req, res) => {
-    const user = req.user;
-    // req.user comes from authenticate middleware, not from client input.
-    return res.status(200).json({
-      id: user._id,
-      name: user.name,
-      username: user.username,
-      profilePicture: user.profilePicture,
-      lastSeen: user.lastSeen,
-      createdAt: user.createdAt,
-    });
-}
+  const user = req.user;
+  // req.user comes from authenticate middleware, not from client input.
+  return res.status(200).json({
+    id: user._id,
+    name: user.name,
+    username: user.username,
+    profilePicture: user.profilePicture,
+    lastSeen: user.lastSeen,
+    createdAt: user.createdAt,
+  });
+};
 
 export const logout = (req, res) => {
   clearAuthCookie(res);

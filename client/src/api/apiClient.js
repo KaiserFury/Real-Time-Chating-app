@@ -12,10 +12,16 @@ export default async function apiClient(endpoint, options = {}) {
   // Let the browser set multipart boundaries automatically for file uploads.
   const isFormData = requestBody instanceof FormData;
 
-  if (requestBody != null && !isFormData && typeof requestBody !== "string") {
+  if (isFormData) {
+    // Defensive: strip any Content-Type that might have been set upstream.
+    // The browser MUST set its own "multipart/form-data; boundary=..." value,
+    // or the backend (Multer) won't be able to parse the request at all.
+    headers.delete("Content-Type");
+  } else if (requestBody != null && typeof requestBody !== "string") {
     requestBody = JSON.stringify(requestBody);
     headers.set("Content-Type", "application/json");
   }
+
   const response = await fetch(`${backendUrl}${requestEndpoint}`, {
     ...options,
     method: options.method ?? "GET",

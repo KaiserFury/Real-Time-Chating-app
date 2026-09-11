@@ -1,7 +1,9 @@
 import express from "express";
 import { checkUsername, getCurrentUser, logout, register, userLogin } from "../controllers/authController.js"
 import { authenticate } from "../middleware/authenticate.js";
-
+import upload from "../middleware/upload.js";
+// import multer  from 'multer';
+// const upload = multer({ dest: 'uploads/' })
 
 const router = express.Router()
 
@@ -9,7 +11,7 @@ const router = express.Router()
 
 router
   .route("/register")
-  .post(register);
+  .post(upload.single('profilePicture'), register);
 
 router
   .route("/check-username")
