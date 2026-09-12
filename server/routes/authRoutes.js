@@ -1,22 +1,30 @@
 import express from "express";
-import { checkUsername, getCurrentUser, logout, register, userLogin } from "../controllers/authController.js"
+import {
+  checkUsername,
+  getCurrentUser,
+  logout,
+  register,
+  userLogin,
+} from "../controllers/authController.js";
 import { authenticate } from "../middleware/authenticate.js";
 import upload from "../middleware/upload.js";
-// import multer  from 'multer';
-// const upload = multer({ dest: 'uploads/' })
 
-const router = express.Router()
-
-
+const router = express.Router();
 
 router
   .route("/register")
-  .post(upload.single('profilePicture'), register);
+  .post((req, res, next) => {
+  upload.single("profilePicture")(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  });
+}, register);
 
 router
   .route("/check-username")
   .get(checkUsername);
-
 
 router
   .route("/login")
@@ -26,9 +34,9 @@ router
 router
   .route("/me")
   .get(authenticate, getCurrentUser);
-router
+  
+router 
   .route("/logout")
   .post(logout);
 
-
-export {router as registerRoute};
+export { router as registerRoute };

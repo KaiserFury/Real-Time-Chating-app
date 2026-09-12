@@ -5,7 +5,6 @@ import { AuthContext } from "./context/AuthContext.js";
 import "./App.css";
 import { RegisterForm } from "./pages/Register.jsx";
 import { LoginForm } from "./pages/Login.jsx";
-import Button from "./components/Button.jsx";
 
 function App() {
   const { user, loading, setUser } = useContext(AuthContext);
@@ -36,7 +35,7 @@ function App() {
 
   return (
     <>
-      <div className="relative w-full max-w-xs rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
+      <div className="relative w-full max-w-xs rounded-2xl bg-linear-to-b from-slate-900 to-slate-950 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)] ring-1 ring-white/10">
         <div className="flex flex-col items-center">
           <img
             className="mb-5 h-24 w-24 rounded-full object-cover ring-2 ring-white/15"

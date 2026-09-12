@@ -5,6 +5,7 @@ import connectDatabase from "./config/database.js";
 import { registerRoute } from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { friendRequestRoute } from "./routes/friendRequestRoutes.js";
 
 
 
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", registerRoute);
+app.use("/api/friends", friendRequestRoute);
 
 const startServer = async () => {
   // Start listening only after MongoDB is ready, so routes can safely query data.

@@ -26,7 +26,6 @@ export function RegisterForm() {
       setFormData((previous) => ({ ...previous, [name]: selectedFile }));
       setFileName(selectedFile.name);
       setPreviewUrl(URL.createObjectURL(selectedFile)); // for image preview
-      console.log(previewUrl);
     } else {
       setFormData((previous) => ({ ...previous, [name]: value }));
     }
@@ -112,14 +111,14 @@ export function RegisterForm() {
                       <span className="font-semibold">Click to upload</span> or
                       drag and drop
                     </div>
-                    <p className="text-xs">SVG, PNG, JPG or GIF</p>
+                    <p className="text-xs">PNG, JPG, or WebP up to 5 MB</p>
                   </div>
                   <input
                     id="dropzone-file"
                     type="file"
                     className="hidden"
                     name="profilePicture"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp"
                     onChange={handleChange}
                   />
                 </label>
