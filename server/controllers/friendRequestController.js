@@ -131,3 +131,29 @@ export const respondToFriendRequest = async (req, res) => {
     return res.status(500).json({ message: "Unable to update friend request" });
   }
 };
+
+// GET /api/friends
+// Returns the current user's accepted friends (the *other* user in each
+// accepted FriendRequest, not the request documents themselves).
+export const getFriends = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const acceptedRequests = await FriendRequest.find({
+      status: "accepted",
+      $or: [{ sender: userId }, { receiver: userId }],
+    })
+      .populate("sender", "name username profilePicture")
+      .populate("receiver", "name username profilePicture");
+
+    // Each accepted request has the current user on one side — pick the *other* side.
+    const friends = acceptedRequests.map((request) => {
+      const isSender = request.sender._id.toString() === userId.toString();
+      return isSender ? request.receiver : request.sender;
+    });
+
+    return res.status(200).json({ friends });
+  } catch (error) {
+    console.error("Get friends error:", error);
+    return res.status(500).json({ message: "Unable to fetch friends" });
+  }
+};

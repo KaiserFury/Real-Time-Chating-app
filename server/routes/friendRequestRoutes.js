@@ -3,6 +3,7 @@ import {
   sendFriendRequest,
   getFriendRequests,
   respondToFriendRequest,
+  getFriends,
 } from "../controllers/friendRequestController.js";
 import { authenticate } from "../middleware/authenticate.js";
 
@@ -22,5 +23,9 @@ router
 router
   .route("/requests/:requestId")
   .patch(authenticate, respondToFriendRequest);
+
+router
+  .route("/")
+  .get(authenticate, getFriends); 
 
 export { router as friendRequestRoute };
