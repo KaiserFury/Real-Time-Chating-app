@@ -1,33 +1,37 @@
 import { useState } from "react";
-import apiClient from "../api/apiClient.js";
 
-export default function MessageComposer({ conversationId, onMessageSent }) {
+export default function MessageComposer({ conversationId, socket }) {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     const trimmed = text.trim();
     if (!trimmed) return;
 
+    if (!socket?.connected) {
+      setError("Connecting to chat server. Please try again in a moment.");
+      return;
+    }
+
     setSending(true);
     setError(null);
 
-    try {
-      await apiClient("/api/messages", {
-        method: "POST",
-        body: { conversationId, text: trimmed },
-      });
+    socket.emit("sendMessage", { conversationId, text: trimmed }, (response) => {
+      setSending(false);
+
+      if (response?.error) {
+        setError(response.error);
+        return;
+      }
 
       setText("");
-      onMessageSent();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSending(false);
-    }
+      // No manual refresh needed — the sender's own socket also receives
+      // "newMessage" via the room broadcast, since io.to(...).emit(...)
+      // includes every socket in that room, sender included.
+    });
   };
 
   return (

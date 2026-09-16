@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import apiClient from "../api/apiClient.js";
 
-export default function MessageList({ conversationId, refreshKey }) {
+export default function MessageList({ conversationId, refreshKey, socket }) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const bottomRef = useRef(null);
 
+  // Initial load via REST — unchanged from before.
   useEffect(() => {
     if (!conversationId) return;
 
@@ -18,9 +19,6 @@ export default function MessageList({ conversationId, refreshKey }) {
         const data = await apiClient(
           `/api/messages/${conversationId}?page=1&limit=20`,
         );
-
-        // The API already returns oldest-to-newest (server reverses the page
-        // internally), so no re-sorting needed here.
         setMessages(data.messages);
       } catch (err) {
         setError(err.message);
@@ -32,14 +30,34 @@ export default function MessageList({ conversationId, refreshKey }) {
     loadMessages();
   }, [conversationId, refreshKey]);
 
+  // Join the conversation's room and listen for realtime messages.
+  useEffect(() => {
+    if (!socket || !conversationId) return;
+
+    socket.emit("joinConversation", conversationId);
+
+    const handleNewMessage = (message) => {
+      // Only append if it belongs to the conversation currently open —
+      // guards against a stray event if rooms overlap unexpectedly.
+      if (message.conversation === conversationId) {
+        setMessages((prev) => [...prev, message]);
+      }
+    };
+
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.emit("leaveConversation", conversationId);
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket, conversationId]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   if (loading) {
-    return (
-      <div className="flex-1 p-4 text-sm text-slate-500">Loading messages…</div>
-    );
+    return <div className="flex-1 p-4 text-sm text-slate-500">Loading messages…</div>;
   }
 
   if (error) {

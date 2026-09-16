@@ -8,14 +8,14 @@ import FriendsPanel from "../components/FriendsPanel";
 import MessageList from "../components/MessageList";
 import MessageComposer from "../components/MessageComposer";
 import ChatHeader from "../components/ChatHeader";
+import { useSocket } from "../hooks/useSocket";
 
 export default function Chat() {
   const { setUser } = useContext(AuthContext);
-
+  const socket = useSocket();
   const [section, setSection] = useState("chat"); // "chat" | "calls" | "friends"
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [activeFriend, setActiveFriend] = useState(null);
-  const [refreshKey, setRefreshKey] = useState(0);
   const [friendListKey, setFriendListKey] = useState(0);
 
   const handleSelectSection = (nextSection) => {
@@ -26,10 +26,6 @@ export default function Chat() {
     setActiveConversationId(conversationId);
     setActiveFriend(friend);
     setSection("chat");
-  };
-
-  const handleMessageSent = () => {
-    setRefreshKey((prev) => prev + 1);
   };
 
   const handleRequestAccepted = () => {
@@ -91,11 +87,11 @@ export default function Chat() {
             </div>
             <MessageList
               conversationId={activeConversationId}
-              refreshKey={refreshKey}
+              socket={socket}
             />
             <MessageComposer
               conversationId={activeConversationId}
-              onMessageSent={handleMessageSent}
+              socket={socket}
             />
           </>
         ) : (
@@ -104,8 +100,8 @@ export default function Chat() {
               {section === "chat"
                 ? "Select a conversation to start chatting"
                 : section === "calls"
-                ? "Select a call to view details"
-                : "Manage friend requests on the left"}
+                  ? "Select a call to view details"
+                  : "Manage friend requests on the left"}
             </p>
           </div>
         )}
