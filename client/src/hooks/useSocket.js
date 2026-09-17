@@ -1,21 +1,22 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import { AuthContext } from "../context/AuthContext.js";
 
-const SOCKET_URL = "http://localhost:8000"; // match your server port
-
 export function useSocket() {
   const { user } = useContext(AuthContext);
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
     if (!user) {
+      socketRef.current?.disconnect();
+      socketRef.current = null;
       return;
     }
 
-    // withCredentials sends the auth cookie along with the socket handshake,
-    // which socketAuthMiddleware reads server-side.
-    const socket = io(SOCKET_URL, {
+    // Calling io() with no URL connects to the page's own origin —
+    // correct in production (Express serves both API and frontend on
+    // the same origin) and in local dev via the Vite proxy.
+    const socket = io({
       withCredentials: true,
     });
 
@@ -23,17 +24,13 @@ export function useSocket() {
       console.error("Socket connection rejected:", err.message);
     });
 
-    socket.on("connect", () => {
-      setSocket(socket);
-    });
-    socket.on("disconnect", () => {
-      setSocket((currentSocket) => (currentSocket === socket ? null : currentSocket));
-    });
+    socketRef.current = socket;
 
     return () => {
       socket.disconnect();
+      socketRef.current = null;
     };
   }, [user]);
 
-  return socket;
+  return socketRef.current;
 }
