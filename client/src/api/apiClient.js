@@ -1,28 +1,20 @@
 const backendUrl = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "");
 
 export default async function apiClient(endpoint, options = {}) {
-  if (!backendUrl) {
-    throw new Error("VITE_BACKEND_URL is not configured");
-  }
-
   const requestEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
   const headers = new Headers(options.headers);
   let requestBody = options.body;
 
-  // Let the browser set multipart boundaries automatically for file uploads.
   const isFormData = requestBody instanceof FormData;
 
   if (isFormData) {
-    // Defensive: strip any Content-Type that might have been set upstream.
-    // The browser MUST set its own "multipart/form-data; boundary=..." value,
-    // or the backend (Multer) won't be able to parse the request at all.
     headers.delete("Content-Type");
   } else if (requestBody != null && typeof requestBody !== "string") {
     requestBody = JSON.stringify(requestBody);
     headers.set("Content-Type", "application/json");
   }
 
-  const response = await fetch(`${backendUrl}${requestEndpoint}`, {
+  const response = await fetch(requestEndpoint, {
     ...options,
     method: options.method ?? "GET",
     headers,
@@ -33,7 +25,6 @@ export default async function apiClient(endpoint, options = {}) {
   const contentType = response.headers.get("content-type");
   let data = null;
 
-  // Some successful responses, like 204 No Content, do not have JSON to parse.
   if (response.status !== 204) {
     data = contentType?.includes("application/json")
       ? await response.json()
@@ -41,7 +32,6 @@ export default async function apiClient(endpoint, options = {}) {
   }
 
   if (!response.ok) {
-    // Keep backend validation messages available to the UI.
     const message =
       data && typeof data === "object" && "message" in data
         ? data.message
