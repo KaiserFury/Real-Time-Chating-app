@@ -21,7 +21,7 @@ export const register = async (req, res) => {
     const normalizedName = name.trim();
     const normalizedUsername = username.trim().toLowerCase();
 
-    // Password is hashed exactly as typed, but whitespace-only passwords are rejected.
+    
     if (!normalizedName || !normalizedUsername || !password.trim()) {
       return res.status(400).json({
         message: "Name, username, and password cannot be empty",
@@ -34,7 +34,7 @@ export const register = async (req, res) => {
       });
     }
 
-    // bcrypt ignores input after 72 bytes, so reject it instead of silently weakening it.
+    
     if (Buffer.byteLength(password, "utf8") > 72) {
       return res.status(400).json({
         message: "Password cannot exceed 72 bytes",

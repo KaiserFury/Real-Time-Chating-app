@@ -1,0 +1,26 @@
+.cloud-bg {
+          position: relative;
+          width: 100%;
+          min-height: 100vh;
+          overflow: hidden;
+          background: linear-gradient(180deg, #7ec8f2 0%, #8fd0f6 100%);
+        }
+        .cloud-bg__content {
+          position: relative;
+          z-index: 10;
+          height: 100%;
+        }
+        .cloud {
+          position: absolute;
+          animation-name: cloud-drift;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+          will-change: transform;
+        }
+        @keyframes cloud-drift {
+          from { transform: translateX(-30vw); }
+          to   { transform: translateX(130vw); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .cloud { animation: none; }
+        }

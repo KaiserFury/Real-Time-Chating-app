@@ -1,0 +1,184 @@
+@import 'tailwindcss';
+
+/* ── CLOUD COLLISION & LIGHTNING TIMELINE ──
+   Cycle duration: 4.2s
+   0%  - 23% (0.0s - 0.96s) : Sun is visible. Clouds drift inward towards center
+   24% - 56% (1.0s - 2.35s) : Sun fades out upward. Clouds COLLIDE & HOLD for ~1.3s!
+                              Lightning strikes furiously from behind the clouds (25% - 53%)
+   56% - 78% (2.35s - 3.27s): Lightning off. Clouds part and drift back. Sun descends back
+   78% - 100% (3.27s - 4.2s): Calm rest at starting positions with sun shining
+*/
+
+@keyframes collideLeft {
+  0% {
+    transform: translateX(-22px);
+  }
+  22% {
+    transform: translateX(18px);
+  }
+  24% {
+    /* Impact */
+    transform: translateX(20px);
+  }
+  /* SOLID 1.3-SECOND HOLD (24% to 56%) */
+  25%, 56% {
+    transform: translateX(20px);
+  }
+  /* SEPARATE ONLY AFTER LIGHTNING TURNS OFF (56% to 78%) */
+  78%, 100% {
+    transform: translateX(-22px);
+  }
+}
+
+@keyframes collideRight {
+  0% {
+    transform: translateX(22px);
+  }
+  22% {
+    transform: translateX(-18px);
+  }
+  24% {
+    /* Impact */
+    transform: translateX(-20px);
+  }
+  /* SOLID 1.3-SECOND HOLD (24% to 56%) */
+  25%, 56% {
+    transform: translateX(-20px);
+  }
+  /* SEPARATE ONLY AFTER LIGHTNING TURNS OFF (56% to 78%) */
+  78%, 100% {
+    transform: translateX(22px);
+  }
+}
+
+/* ── SUN FADES OUT UPWARD ON COLLISION ── */
+
+@keyframes sunFadeUp {
+  0%, 18% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  25% {
+    /* Floats upward into the dark sky and fades out completely */
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+  26%, 55% {
+    /* Stays hidden while dark storm clouds clash and lightning strikes */
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+  56% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  76%, 100% {
+    /* Descends back down into the clearing gap between clouds */
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── LIGHTNING BOLTS (BEHIND CLOUDS, ACTIVE DURING THE 1.3s HOLD) ── */
+
+@keyframes bolt1 {
+  0%, 24%   { opacity: 0; }
+  25%, 32%  { opacity: 1; }
+  33%, 35%  { opacity: 0; }
+  36%, 42%  { opacity: 0.9; }
+  43%, 100% { opacity: 0; }
+}
+
+@keyframes bolt2 {
+  0%, 30%   { opacity: 0; }
+  31%, 38%  { opacity: 1; }
+  39%, 41%  { opacity: 0; }
+  42%, 49%  { opacity: 0.95; }
+  50%, 100% { opacity: 0; }
+}
+
+@keyframes bolt3 {
+  0%, 26%   { opacity: 0; }
+  27%, 34%  { opacity: 0.9; }
+  35%, 38%  { opacity: 0.1; }
+  39%, 52%  { opacity: 0.85; }
+  53%, 100% { opacity: 0; }
+}
+
+/* ── AMBIENT FLASHES (IN SYNC WITH THE HOLD) ── */
+
+@keyframes skyPulse {
+  0%, 23%   { opacity: 0; }
+  24%, 32%  { opacity: 0.35; }
+  33%, 35%  { opacity: 0.05; }
+  36%, 44%  { opacity: 0.45; }
+  45%, 52%  { opacity: 0.35; }
+  53%, 100% { opacity: 0; }
+}
+
+@keyframes groundPulse {
+  0%, 23%   { opacity: 0; }
+  24%, 32%  { opacity: 0.85; }
+  33%, 35%  { opacity: 0.15; }
+  36%, 44%  { opacity: 0.95; }
+  45%, 52%  { opacity: 0.8; }
+  53%, 100% { opacity: 0; }
+}
+
+/* ── ANIMATION CLASS ATTACHMENTS (UNIFIED 4.2s CYCLE) ── */
+
+.cloud-left {
+  animation: collideLeft 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.cloud-right {
+  animation: collideRight 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.sun-element {
+  animation: sunFadeUp 4.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.bolt1 {
+  animation: bolt1 4.2s ease-in-out infinite;
+}
+
+.bolt2 {
+  animation: bolt2 4.2s ease-in-out infinite;
+}
+
+.bolt3 {
+  animation: bolt3 4.2s ease-in-out infinite;
+}
+
+.sky-pulse {
+  animation: skyPulse 4.2s ease-in-out infinite;
+}
+
+.ground-pulse {
+  animation: groundPulse 4.2s ease-in-out infinite;
+}
+
+/* ── LOADING CAPTION ── */
+
+.loading {
+  margin-top: 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #8a909e;
+  animation: loadingGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes loadingGlow {
+  0%, 100% {
+    opacity: 0.45;
+    color: #8a909e;
+  }
+  50% {
+    opacity: 1;
+    color: #ffe44d;
+    text-shadow: 0 0 10px rgba(255, 228, 77, 0.45);
+  }
+}
